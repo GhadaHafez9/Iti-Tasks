@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_application_2/Models/users_model.dart';
+import 'package:flutter_application_2/Models/user_model.dart';
 
 class UserService {
   String url = "https://jsonplaceholder.typicode.com/users" ;
