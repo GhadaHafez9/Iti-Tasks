@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-
+ // ignore_for_file: prefer_const_constructors
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_2/Models/user_model.dart';
-import 'package:flutter_application_2/Service/user_service.dart';
+import 'package:flutter_application_2/views/cubit/todos_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+
 
 class Page4 extends StatefulWidget {
   const Page4({super.key});
@@ -15,37 +16,38 @@ class Page4 extends StatefulWidget {
 
 
 class _Page4State extends State<Page4> {
-  List<UserModel> users = [];
-  bool isLoading = true ;
-
-
-  getMyUsers() async {
-  users = await UserService() .getUsers() ;
-  isLoading = false ;
-  setState(() {
-    
-  });
-}
-@override
-  void initState (){
-    super.initState() ;
-    getMyUsers() ;
-  }
+ 
   @override
 
   Widget build(BuildContext context) {
-    return isLoading ?
-    Center(child: CircularProgressIndicator(),)
-    
-     : ListView.builder(itemCount:users .length
-    , itemBuilder : (BuildContext context ,int  index) {
-      return ListTile(
-        title: Text (users[index].name ??'--'),
-        subtitle: Text(users[index].email ?? '--'),
-        trailing: Icon(Icons.person),
-        leading: Text("${index + 1}"),
-      );
-    },
+    return  BlocProvider(
+      create: (context) => TodosCubit(),
+      child: BlocConsumer<TodosCubit, TodosState>(
+        builder: (context, state) {
+          if (state is TodosLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (state is TodosError) {
+            return Center(
+              child: Text("Error"),
+            );
+          } 
+         return ListView.builder(
+          itemCount:context.watch<TodosCubit>() .todos.length
+          ,itemBuilder : (BuildContext context ,int  index) {
+          return ListTile(
+          title: Text (context.watch<TodosCubit>().todos[index] .userId.toString() ),
+          subtitle: Text( context.watch<TodosCubit>().todos[index].title.toString()),
+          trailing: Icon(Icons.account_box_sharp),
+          leading: Text("${index + 1}"),
+              );
+            }
+          );
+        },
+        listener: (context, state) {},
+      ),
     );
   }
 }
