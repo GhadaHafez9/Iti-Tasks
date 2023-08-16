@@ -1,8 +1,9 @@
 // ignore_for_file: prefer_const_constructors, use_build_context_synchronously
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/views/Screens/home_screen.dart';
+import 'package:flutter_application_2/views/Screens/signup_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,7 +15,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
    final _formKey = GlobalKey<FormState>();
+   bool insecurepass = true;
    TextEditingController usernamecontroller = TextEditingController();
+   TextEditingController passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,6 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: const EdgeInsets.all(8.0),
               child: TextFormField(
                 decoration:  InputDecoration(labelText:"Password" ),
+                 obscureText: insecurepass,
+                    obscuringCharacter: "*",
                 validator: (value) {
                   if (value == null || value.length <9) {
                     return "Enter valid Passward ";
@@ -70,18 +75,26 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 30),
                 CupertinoButton.filled(
                   onPressed: () async { if (_formKey.currentState!.validate()) {
+                   // bool result = await fireBaseLogin(usernamecontroller.text, passwordController.text);
+                   //   if (result == true) {
                     final SharedPreferences prefs = await SharedPreferences.getInstance();
                     await prefs.setString('username', usernamecontroller.text);
                     Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) =>  HomeScreen(
                           username: usernamecontroller.text,)));
-                    
+                     // }
+                   // else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content:  Text("Success")));
-                    }},
+                  
+                   // }
+                   }},
                   child:   Text(' Log In '),
                 ),
+  
+  
+  
             
                 SizedBox(height: 15),
                 
@@ -97,8 +110,13 @@ class _LoginScreenState extends State<LoginScreen> {
             
                 SizedBox(height: 200),
                 CupertinoButton.filled(
-                  onPressed: () {},
-                  child: const Text('Create new account'),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>  SignUpScreen()));
+                  
+                  },
+                  child: const Text('No Account? Sign up Now !'),
                 ),
                
           ],
@@ -108,4 +126,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
     );
   }
+  //  Future<bool> fireBaseLogin(String email, String password) async {
+  //   try {
+  //     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //       email: email,
+  //       password: password,
+  //     );
+  //     if (userCredential.user != null) {
+  //       return true;
+  //     }
+  //   } on FirebaseAuthException catch (e) {
+  //     if (e.code == 'user-not-found') {
+  //       print('No user found for that email.');
+  //     } else if (e.code == 'wrong-password') {
+  //       print('Wrong password provided for that user.');
+  //     }
+  //   }
+  //   return false;
+  // }
 }
